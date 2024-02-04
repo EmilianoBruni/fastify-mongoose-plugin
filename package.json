@@ -1,7 +1,7 @@
 {
   "name": "fastify-mongoose-plugin",
   "version": "0.1.0",
-  "description": "<la stessa di GitHub>",
+  "description": "A modern Fastify plugin with support for Typescript, ES6/commonJS module, to connect to a MongoDB instance via the Mongoose ODM",
   "main": "dist/index.js",
   "scripts": {
     "test": "tap -j1 --allow-incomplete-coverage \"./test/*.test.?(c)js\"",
