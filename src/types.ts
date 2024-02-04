@@ -14,7 +14,9 @@ export type TFMPPlugin = {
     instance: typeof mongoose;
 };
 
-export type TFMPSchema<T = any> = SchemaTypeOptions<T>;
+export type TFMPSchema<T = any> = SchemaTypeOptions<T> & {
+    validateExistance?: boolean;
+};
 
 export type TFMPModel<T = any> = {
     name: string;
