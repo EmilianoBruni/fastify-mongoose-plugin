@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+    dev:
+        image: fastify-mongoose-plugin-dev
+        build: 
+            context: ../
+            dockerfile: docker/dev/Dockerfile
+            args:
+                - IDIR=fastify-mongoose-plugin
+                #- BMODE=production # default development on Dockerfile
+        volumes:
+            - ../:/ws/fastify-mongoose-plugin:cached
+            # node_modules in un volume temporaneo che non mi sovraccarica il prj reale in debug
+            - dev-modules:/ws/fastify-mongoose-plugin/node_modules 
+
+    # Overrides default command so things don't shut down after the process ends.
+        command: sleep infinity
+        deploy:
+            resources:
+                limits:
+                    cpus: 2
+
+volumes:
+    dev-modules:
+
+networks:
+    default:
+        name: docker_default
+        external: true

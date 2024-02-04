@@ -1,0 +1,55 @@
+{
+  "name": "fastify-mongoose-plugin",
+  "version": "0.1.0",
+  "description": "<la stessa di GitHub>",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "tap -j1 --allow-incomplete-coverage \"./test/*.test.?(c)js\"",
+    "buildcjs": "rollup ./dist/index.js --file ./dist/index.cjs --format cjs",
+    "clean": "rimraf ./dist",
+    "lint": "eslint \"src/**/*.ts\" \"test/**/*.?(c)js\" ",
+    "lint:fix": "npm run lint -- --fix",
+    "prepublishOnly": "npm run tsc && npm run buildcjs && npm test",
+    "test:ci": "npm run prepublishOnly",
+    "tsc": "npm run clean; tsc"
+  },
+  "keywords": [
+    "nodejs",
+    "typescript"
+  ],
+  "author": "Emiliano Bruni <info@ebruni.it>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EmilianoBruni/fastify-mongoose-plugin"
+  },
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/EmilianoBruni/fastify-mongoose-plugin/issues"
+  },
+  "homepage": "https://github.com/EmilianoBruni/fastify-mongoose-plugin#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.4.0",
+    "eslint": "^8.0.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-standard-with-typescript": "^43.0.1",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0 || ^16.0.0 ",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-promise": "^6.0.0",
+    "prettier": "^3.2.5",
+    "rimraf": "^5.0.5",
+    "rollup": "^4.9.6",
+    "tap": "^18.7.0",
+    "typescript": "^5.3.3"
+  },
+  "exports": {
+    "import": "./dist/index.js",
+    "require": "./dist/index.cjs"
+  },
+  "dependencies": {
+    "@types/node": "^20.11.16",
+    "fastify": "^4.26.0",
+    "fastify-plugin": "^4.5.1"
+  }
+}

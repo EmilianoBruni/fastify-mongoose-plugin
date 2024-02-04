@@ -1,0 +1,8 @@
+// For format details, see https://aka.ms/devcontainer.json.
+{
+"name": "fastify-mongoose-plugin",
+"dockerComposeFile": "docker/docker-compose.vscode.yml",
+"service": "dev",
+"workspaceFolder": "/ws/${localWorkspaceFolderBasename}",
+"initializeCommand": "echo Initialize...." // this is a workaround for a bug, remove if it works well without it
+}
