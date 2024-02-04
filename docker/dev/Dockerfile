@@ -30,15 +30,15 @@ ARG BMODE
 ENV NODE_ENV=${BMODE}
 WORKDIR /ws/${IDIR}
 # Install dependencies based on the preferred package manager
-COPY package.json ./
-# comment --frozen-lockfile for first time
-RUN --mount=type=cache,id=pnpm,target=/home/node/pnpm/store pnpm install --frozen-lockfile
+COPY package.json pnpm-lock.yaml* ./
+RUN --mount=type=cache,id=pnpm,target=/home/node/pnpm/store [ -e pnpm-lock.yaml ] && pnpm install else --frozen-lockfile || pnpm install
 
 # 03a - Rebuild the source code only when needed
 FROM base AS builder
 ARG IDIR
 WORKDIR /ws/${IDIR}
-COPY * .
+COPY . ./
+COPY --from=deps ws/${IDIR}/pnpm-lock.yaml* .
 COPY --from=deps ws/${IDIR}/node_modules ./node_modules
 #RUN pnpm run build
 
@@ -53,7 +53,5 @@ LABEL org.opencontainers.image.authors="Bruni Emiliano <info@ebruni.it>"
 LABEL org.opencontainers.image.version=1.0
 
 COPY --from=builder ws/${IDIR}/. .
-# comment this for first run
-COPY --from=builder ws/${IDIR}/node_modules ./node_modules
 
 CMD [""]
