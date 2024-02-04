@@ -50,6 +50,7 @@
   "dependencies": {
     "@types/node": "^20.11.16",
     "fastify": "^4.26.0",
-    "fastify-plugin": "^4.5.1"
+    "fastify-plugin": "^4.5.1",
+    "mongoose": "^8.1.1"
   }
 }
