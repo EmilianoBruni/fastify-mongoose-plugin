@@ -8,9 +8,7 @@ declare module 'fastify' {
     }
 }
 
-export type TFMPPlugin = {
-    [key: string]: typeof mongoose.Model;
-} & {
+export type TFMPPlugin = Record<string, mongoose.Model<any, object>> & {
     instance: typeof mongoose;
 };
 
