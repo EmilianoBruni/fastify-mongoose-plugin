@@ -13,6 +13,9 @@ services:
             - ../:/ws/fastify-mongoose-plugin:cached
             # node_modules in un volume temporaneo che non mi sovraccarica il prj reale in debug
             - dev-modules:/ws/fastify-mongoose-plugin/node_modules 
+        depends_on:
+            db:
+                condition: service_healthy
 
     # Overrides default command so things don't shut down after the process ends.
         command: sleep infinity
@@ -20,7 +23,20 @@ services:
             resources:
                 limits:
                     cpus: 2
-
+    db:
+        image: mongo:4.4.18
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: test
+        deploy:
+            resources:
+                limits:
+                    cpus: 2
+        healthcheck:
+            test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
+            interval: 10s
+            timeout: 3s
+            retries: 5
 volumes:
     dev-modules:
 
