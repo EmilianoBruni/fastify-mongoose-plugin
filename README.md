@@ -126,7 +126,7 @@ Any models declared should follow the following format:
 {
   name: "profiles", // Required, should match name of model in database
   alias: "Profile", // Optional, an alias to inject the model as
-  schema: schemaDefinition // Required, should match schema of model in database,
+  schema: schemaDefinition, // Required, should match schema of model in database,
   options: schemaOptions, // Optional, schema configurable options
   class: classDefinition // Optional, should be an ES6 class wrapper for the model
 }
