@@ -23,7 +23,7 @@ const initPlugin: FastifyPluginAsync<TFMPOptions> = async (
     }: TFMPOptions
 ) => {
     await mongoose.connect(uri, settings);
-    decorator.instance = mongoose;
+    decorator = { instance: mongoose } as unknown as TFMPPlugin;
 
     if (modelDirPath)
         models = [...(await loadModelsFromPath(modelDirPath)), ...models];
