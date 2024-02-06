@@ -13,6 +13,7 @@ services:
             - ../:/ws/fastify-mongoose-plugin:cached
             # node_modules in un volume temporaneo che non mi sovraccarica il prj reale in debug
             - dev-modules:/ws/fastify-mongoose-plugin/node_modules 
+            - pnpm-store:/home/node/pnpm/store
         depends_on:
             db:
                 condition: service_healthy
@@ -39,6 +40,7 @@ services:
             retries: 5
 volumes:
     dev-modules:
+    pnpm-store:
 
 networks:
     default:

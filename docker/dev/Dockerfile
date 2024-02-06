@@ -22,6 +22,7 @@ USER node
 ENV PNPM_HOME="/home/node/pnpm" 
 # add node_modules executables to PATH
 ENV PATH="/ws/${IDIR}/node_modules/.bin:$PNPM_HOME:$PATH"
+RUN --mount=type=cache,id=fastify-mongoose-plugin_pnpm-store,uid=1001,gid=1001,target=/pnpm/store pnpm config set store-dir /home/node/pnpm/store
 
 # 02a - Install dependencies only when package.json changes
 FROM base AS deps
@@ -31,7 +32,7 @@ ENV NODE_ENV=${BMODE}
 WORKDIR /ws/${IDIR}
 # Install dependencies based on the preferred package manager
 COPY package.json pnpm-lock.yaml* ./
-RUN --mount=type=cache,id=pnpm,target=/home/node/pnpm/store [ -e pnpm-lock.yaml ] && pnpm install else --frozen-lockfile || pnpm install
+RUN [ -e pnpm-lock.yaml ] && pnpm install --frozen-lockfile || pnpm install
 
 # 03a - Rebuild the source code only when needed
 FROM base AS builder
