@@ -10,7 +10,7 @@ import { join } from 'path';
 import fp from 'fastify-plugin';
 import mongoose from 'mongoose';
 
-let decorator: TFMPPlugin;
+let decoratorPlugin: TFMPPlugin;
 
 const initPlugin: FastifyPluginAsync<TFMPOptions> = async (
     fastify: FastifyInstance,
@@ -23,14 +23,14 @@ const initPlugin: FastifyPluginAsync<TFMPOptions> = async (
     }: TFMPOptions
 ) => {
     await mongoose.connect(uri, settings);
-    decorator = { instance: mongoose } as unknown as TFMPPlugin;
+    decoratorPlugin = { instance: mongoose } as unknown as TFMPPlugin;
 
     if (modelDirPath)
         models = [...(await loadModelsFromPath(modelDirPath)), ...models];
 
     if (models.length !== 0) {
         models.forEach(model => {
-            fixReferences(decorator, model.schema);
+            fixReferences(decoratorPlugin, model.schema);
 
             const schema = new mongoose.Schema(model.schema, model.options);
 
@@ -43,13 +43,13 @@ const initPlugin: FastifyPluginAsync<TFMPOptions> = async (
                 if (model.alias === undefined)
                     throw new Error(`No alias defined for ${model.name}`);
 
-                decorator[model.alias] = mongoose.model(
+                decoratorPlugin[model.alias] = mongoose.model(
                     model.alias,
                     schema,
                     model.name
                 );
             } else {
-                decorator[
+                decoratorPlugin[
                     model.alias
                         ? model.alias
                         : model.name.charAt(0).toUpperCase() +
@@ -65,7 +65,7 @@ const initPlugin: FastifyPluginAsync<TFMPOptions> = async (
         app.mongoose.instance.connection.close();
     });
 
-    fastify.decorate('mongoose', decorator);
+    fastify.decorate('mongoose', decoratorPlugin);
 };
 
 const loadModelsFromPath = async (
@@ -147,3 +147,7 @@ const plugin = fp(initPlugin, {
 });
 
 export default plugin;
+
+const decorator = () => decoratorPlugin;
+
+export { decorator };
