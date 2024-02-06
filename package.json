@@ -52,5 +52,6 @@
     "fastify": "^4.26.0",
     "fastify-plugin": "^4.5.1",
     "mongoose": "^8.1.1"
-  }
+  },
+  "types": "./dist/index.d.ts"
 }
