@@ -11,3 +11,4 @@ test
 src/*
 @types
 tsconfig.json
+.env
