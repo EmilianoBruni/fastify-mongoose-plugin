@@ -4,7 +4,7 @@ _A modern Fastify plugin with support for Typescript, ES6/commonJS module, to co
 
 Fastify-mongoose-plugin is a rewrite from scratch of [fastify-mongoose/fastify-mongoose-driver](https://github.com/alex-ppg/fastify-mongoose) which seems not more mantained.
 
-It's is full compatible with fastify-mongoose-driver but add some modern features:
+It's is full compatible with fastify-mongoose-driver (see [below](#how-to-upgrade-your-projects-from-fastify-mongoose-driver) how to upgrade your project if you are this) but add some modern features:
 
 * Support for Typescript (fastify-mongoose-plugin is wrote in typescript)
 * Support for ES6 module
@@ -147,6 +147,28 @@ The `schemaDefinition` variable should be created according to the [Mongoose Mod
 The `schemaOptions` variable should be created according to the [Mongoose Model Options Specification](https://mongoosejs.com/docs/guide.html#options).
 
 The `classDefinition` variable should be created according to the [Mongoose Class Specification](https://mongoosejs.com/docs/4.x/docs/advanced_schemas.html).
+
+## How to upgrade your projects from fastify-mongoose-driver
+
+* Replace  with fastify-mongoose-plugin in you package.json
+
+```bash
+npm rm fastify-mongoose-driver
+pnpm install fastify-mongoose-plugin -s
+```
+* in your plugins files where fastify-mongoose-driver was used
+
+```javascript
+import mongoose from 'fastify-mongoose-driver' // delete this
+import mongoose from 'fastify-mongoose-plugin' // replace with
+```
+
+* If used in plugin settings:
+  
+  * remove `useCreateIndex: true` because is default from Mongoose 6 and is removed in Mongoose 8
+  * remove `useNewUrlParser: true` and `useUnifiedTopology: true` because is default from Mongoose 6 and is marked as deprecated in Mongoose 8
+
+* Optional: Convert your library to ES6 :-)
 
 ## CommonJS
 
