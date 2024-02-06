@@ -2,7 +2,7 @@
 
 _A modern Fastify plugin with support for Typescript, ES6/commonJS module, to connect to a MongoDB instance via the Mongoose ODM_
 
-Fastify-mongoose-plugin is a rewrite from scratch of [fastify-mongoose/fastify-mongoose-driver](/alex-ppg/fastify-mongoose) which seems not more mantained.
+Fastify-mongoose-plugin is a rewrite from scratch of [fastify-mongoose/fastify-mongoose-driver](https://github.com/alex-ppg/fastify-mongoose) which seems not more mantained.
 
 It's is full compatible with fastify-mongoose-driver but add some modern features:
 
