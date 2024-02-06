@@ -21,8 +21,10 @@ npm i fastify-mongoose-plugin -s
 
 ```javascript
 // ...Other Plugins
+import mongoosePlugin, { decorator } from "fastify-mongoose-driver"
+
 fastify.register(
-  require("fastify-mongoose-driver").plugin,
+  mongoosePlugin,
   {
     uri: "mongodb://admin:pass@localhost:27017/database_name",
     settings: {
@@ -107,7 +109,7 @@ fastify.get("/", (request, reply) => {
   console.log(fastify.mongoose.Account); // Any models declared are available here
 });
 
-require("fastify-mongoose-driver").decorator(); // Returns the decorator pointer, useful for using mongoose in seperate files
+decorator(); // Returns the decorator pointer, useful for using mongoose in seperate files
 ```
 
 ## Options
