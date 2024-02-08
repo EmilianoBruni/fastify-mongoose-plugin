@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+    dev:
+        image: fastify-mongoose-plugin-dev
+        build: 
+            context: ../
+            dockerfile: docker/dev/Dockerfile
+            args:
+                - IDIR=fastify-mongoose-plugin
+                #- BMODE=production # default development on Dockerfile
