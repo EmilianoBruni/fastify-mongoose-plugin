@@ -150,10 +150,10 @@ The `classDefinition` variable should be created according to the [Mongoose Clas
 
 ## How to upgrade your projects from fastify-mongoose-driver
 
-* Replace  with fastify-mongoose-plugin in you package.json
+* Replace with fastify-mongoose-plugin in you package.json
 
 ```bash
-npm rm fastify-mongoose-driver
+pnpm rm fastify-mongoose-driver
 pnpm install fastify-mongoose-plugin -s
 ```
 * in your plugins files where fastify-mongoose-driver was used
@@ -162,6 +162,8 @@ pnpm install fastify-mongoose-plugin -s
 import mongoose from 'fastify-mongoose-driver' // delete this
 import mongoose from 'fastify-mongoose-plugin' // replace with
 ```
+
+* If used `require('fastify-mongoose-api').plugin`, remove `.plugin`.
 
 * If used in plugin settings:
   
