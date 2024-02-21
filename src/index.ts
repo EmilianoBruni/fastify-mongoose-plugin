@@ -1,5 +1,6 @@
 import type {
     TFMPPlugin,
+    TFMPModel,
     TFMPModels,
     TFMPOptions,
     TFMPSchema
@@ -151,3 +152,5 @@ export default plugin;
 const decorator = () => decoratorPlugin;
 
 export { decorator };
+
+export type { TFMPPlugin, TFMPModel, TFMPModels, TFMPOptions, TFMPSchema };
