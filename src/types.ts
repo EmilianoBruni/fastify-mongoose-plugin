@@ -1,5 +1,9 @@
 import type { FastifyPluginOptions } from 'fastify';
-import type { MongooseOptions, SchemaTypeOptions } from 'mongoose';
+import type {
+    MongooseOptions,
+    SchemaTypeOptions,
+    SchemaOptions as MongooseSchemaOptions
+} from 'mongoose';
 import type mongoose from 'mongoose';
 
 declare module 'fastify' {
@@ -20,7 +24,7 @@ export type TFMPModel<T = any> = {
     name: string;
     alias?: string;
     schema: TFMPSchema<T>;
-    options?: any;
+    options?: MongooseSchemaOptions<T>;
     class?: any;
     virtualize?: (schema: any) => void;
 };
