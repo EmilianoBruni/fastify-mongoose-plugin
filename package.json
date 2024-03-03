@@ -1,6 +1,6 @@
 {
   "name": "fastify-mongoose-plugin",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A modern Fastify plugin with support for Typescript, ES6/commonJS module, to connect to a MongoDB instance via the Mongoose ODM",
   "main": "dist/index.js",
   "scripts": {
