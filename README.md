@@ -2,6 +2,14 @@
 
 _A modern Fastify plugin with support for Typescript, ES6/commonJS module, to connect to a MongoDB instance via the Mongoose ODM_
 
+[![npm package](https://img.shields.io/npm/v/fastify-mongoose-plugin.svg)](http://npmjs.org/package/fastify-mongoose-plugin)
+[![Build workflow](https://github.com/EmilianoBruni/fastify-mongoose-plugin/actions/workflows/build.yml/badge.svg)](https://github.com/EmilianoBruni/fastify-mongoose-plugin/actions/workflows/build.yml)
+[![Coverage Status](https://coveralls.io/repos/github/EmilianoBruni//badge.svg?branch=master)](https://coveralls.io/github/EmilianoBruni/fastify-mongoose-plugin?branch=master)
+![Last Commit](https://img.shields.io/github/last-commit/EmilianoBruni/fastify-mongoose-plugin)
+![Dependencies](https://img.shields.io/librariesio/github/EmilianoBruni/fastify-mongoose-plugin)
+![Downloads](https://img.shields.io/npm/dt/fastify-mongoose-plugin)
+
+
 Fastify-mongoose-plugin is a rewrite from scratch of [fastify-mongoose/fastify-mongoose-driver](https://github.com/alex-ppg/fastify-mongoose) which seems not more mantained.
 
 It's is full compatible with fastify-mongoose-driver (see [below](#how-to-upgrade-your-projects-from-fastify-mongoose-driver) how to upgrade your project if you are this) but add some modern features:
