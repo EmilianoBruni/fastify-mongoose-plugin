@@ -91,9 +91,7 @@ const walkDir = (modelDirPath: string, fileList: string[] = []): string[] => {
         const pathFile = join(modelDirPath, file);
         const stat = statSync(pathFile);
         if (stat.isDirectory()) fileList = walkDir(pathFile, fileList);
-        else
-            if (file.slice(-3) === '.js') 
-                fileList.push(pathFile);
+        else if (file.slice(-3) === '.js') fileList.push(pathFile);
     });
     return fileList;
 };
