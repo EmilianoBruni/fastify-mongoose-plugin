@@ -21,17 +21,12 @@ npm i fastify-mongoose-plugin -s
 
 ```javascript
 // ...Other Plugins
-import mongoosePlugin, { decorator } from "fastify-mongoose-driver"
+import mongoosePlugin, { decorator } from "fastify-mongoose-plugin"
 
 fastify.register(
   mongoosePlugin,
   {
     uri: "mongodb://admin:pass@localhost:27017/database_name",
-    settings: {
-      useNewUrlParser: true,
-      config: {
-        autoIndex: true,
-      },
     },
     models: [
       {
@@ -120,7 +115,7 @@ decorator(); // Returns the decorator pointer, useful for using mongoose in sepe
 | `settings`        | Optional, the settings to be passed on to the MongoDB Driver as well as the Mongoose-specific options. [Refer here for further info](https://mongoosejs.com/docs/api.html#mongoose_Mongoose-connect). |
 | `models`          | Optional, any models to be declared and injected under `fastify.mongoose`                                                                                                                             |
 | `useNameAndAlias` | Optional, declares models using `mongoose.model(alias, schema, name)` instead of `mongoose.model(name, schema)`                                                                                       |
-| `modelDirPath` | Optional, directory where it's possible to define models in separate files. The directory will be trasverse includes all subdirectories
+| `modelDirPath` | Optional, directory where it's possible to define models in separate files. The directory will be trasverse includes all subdirectories. Scan only files with .js extension.
 
 Any models declared should follow the following format:
 
@@ -171,6 +166,166 @@ import mongoose from 'fastify-mongoose-plugin' // replace with
   * remove `useNewUrlParser: true` and `useUnifiedTopology: true` because is default from Mongoose 6 and is marked as deprecated in Mongoose 8
 
 * Optional: Convert your library to ES6 :-)
+
+## Examples 
+
+### Typescript example under @fastify/autoload
+
+Create a config file in `configs/db/db.config.ts` like this
+
+```typescript
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+export default {
+    uri: 'mongodb://username:password@host:27017/db',
+    modelDirPath: __dirname + "/schemas"
+};
+```
+
+load config via plugin folder `plugins/config.ts`
+
+```typescript
+import config from '../configs/app.config.js';
+import fp from 'fastify-plugin';
+
+export default fp(
+    async app => {
+        app.decorate('config', config);
+        app.ready(err => {
+            if (err) throw err;
+        });
+    },
+    {
+        name: 'config'
+    }
+);
+```
+
+load mongoose via plugin folder `plugins/mongoose.ts`
+
+
+```typescript
+import type { TFMPOptions } from 'fastify-mongoose-plugin';
+import config from '../configs/db/db.config.js';
+import mongoose from 'fastify-mongoose-plugin';
+import fp from 'fastify-plugin';
+
+export default fp<TFMPOptions>(
+    async app => {
+        app.register(mongoose, {
+            uri: config.uri,
+            modelDirPath: config.modelDirPath
+        }).after(err => {
+            if (err) throw err;
+            app.mongoose.instance.set(
+                'debug',
+                process.env.NODE_ENV === 'development'
+            );
+        });
+    },
+    {
+        name: 'mongoose',
+        dependencies: ['config']
+    }
+);
+```
+
+Inside `configs/db/schemas` put db schemas, like this `test.ts`
+
+```typescript
+import type { TFMPModel } from 'fastify-mongoose-plugin';
+
+const schema: TFMPModel = {
+    name: "test",
+    options: {
+        timestamps: true, // add createdAt and updatedAt fields
+        versionKey: false, // remove __v field
+    },
+    schema: {
+        name: { type: 'String', required: true },
+        age: { type: 'Number', required: true },
+        address: { type: 'String' },
+        createdAt: { type: 'Date', default: Date.now },
+        updatedAt: { type: 'Date', default: Date.now },
+    }
+};
+
+export default schema;
+```
+
+Now you can use `fastify.mongoose.Test` as a Mongoose Model to test collection. 
+
+As an example, this a REST like entries
+
+```typescript
+import { FastifyInstance, FastifyRequest } from "fastify";
+
+type RequestId = { Params: { id: string } };
+type RequestBody = {
+    Body: {
+        name: string,
+        age: number,
+        address: string
+    }
+};
+
+const page = async (app: FastifyInstance) => {
+    app.get('/test', async function () {
+        const Test = app.mongoose.Test;
+        if (!Test) { return 'Test is not defined'; }
+        const test = await Test.find();
+        return test;
+    })
+    app.post('/test', async function (request: FastifyRequest<RequestBody>) {
+        const Test = app.mongoose.Test;
+        if (!Test) { return 'Test is not defined'; }
+        const test = new Test(request.body);
+        return test.save();
+    })
+
+    app.get('/test/:id', async function (request: FastifyRequest<RequestId>) {
+        const Test = app.mongoose.Test;
+        if (!Test) { return 'Test is not defined'; }
+        const test = await Test.findById(request.params.id);
+        return test;
+    })
+
+    app.put('/test/:id', async function (request: FastifyRequest<RequestBody & RequestId>) {
+        const Test = app.mongoose.Test;
+        if (!Test) { return 'Test is not defined'; }
+        const test = await Test.findByIdAndUpdate(request.params.id, request.body);
+        return test;
+    })
+
+    app.delete('/test/:id', async function (request: FastifyRequest<RequestId>) {
+        const Test = app.mongoose.Test;
+        if (!Test) { return 'Test is not defined'; }
+        const test = await Test.findByIdAndDelete(request.params.id);
+        return test;
+    })
+
+    app.get('/test/name/:name', async function (request: FastifyRequest<{ Params: { name: string } }>) {
+        const Test = app.mongoose.Test;
+        if (!Test) { return 'Test is not defined'; }
+        const test = await Test.find({ name: request.params.name });
+        return test;
+    })
+
+    app.get('/test/age/:age', async function (request: FastifyRequest<{ Params: { age: number } }>) {
+        const Test = app.mongoose.Test;
+        if (!Test) { return 'Test is not defined'; }
+        const test = await Test.find({ age: request.params.age });
+        return test;
+    })
+};
+export default page;
+
+```
+
+But remember, for automatic REST Api there is [fastify-mongoose-api](https://github.com/jeka-kiselyov/fastify-mongoose-api)
 
 ## CommonJS
 
