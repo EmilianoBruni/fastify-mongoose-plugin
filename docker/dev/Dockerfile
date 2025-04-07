@@ -4,7 +4,7 @@ ARG IDIR
 ARG BMODE=development
 
 # 01a - base image
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 ARG IDIR
 # set PNPM_HOME and PATH for root user so corepack can be used
 ENV PNPM_HOME="/pnpm" PATH="/pnpm:$PATH" TZ="Europe/Rome"
