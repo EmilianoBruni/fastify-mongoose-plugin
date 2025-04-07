@@ -343,6 +343,11 @@ This module supports both ESM and CommonJS. If you are using CommonJS, you can i
 const mongoosePlugin = require('fastify-mongoose-plugin');
 ```
 
+## Fastify versions
+
+* For **Fastify 4.x** use `fastify-mongoose-plugin@0.1.3`
+* For **Fastify 5.x** use  `fastify-mongoose-plugin@0.2.x`
+
 ## Bugs / Help / Feature Requests / Contributing
 
 * For feature requests or help, please visit [the discussions page on GitHub](https://github.com/EmilianoBruni/fastify-mongoose-plugin/discussions).
