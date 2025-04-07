@@ -124,19 +124,23 @@ const fixReferencesObjectId = (decorator: TFMPPlugin, member: TFMPSchema) => {
 
             const ref = member.ref.toString();
 
-            member.validate = {
-                validator: async (v: any): Promise<boolean | undefined> => {
-                    try {
-                        decorator[ref] !== undefined &&
-                            (await decorator[ref]!.findById(v));
-                    } catch (e) {
-                        /* istanbul ignore next */
-                        throw new Error(
-                            `Post with ID ${v} does not exist in database!`
-                        );
+            member.validate = async (v: any): Promise<boolean> => {
+                try {
+                    if (decorator[ref] !== undefined) {
+                        const result = await decorator[ref]!.findById(v);
+                        if (!result) {
+                            throw new Error(
+                                `Post with ID ${v} does not exist in database!`
+                            );
+                        }
                     }
-                    return true;
+                } catch (e) {
+                    /* istanbul ignore next */
+                    throw new Error(
+                        `Post with ID ${v} does not exist in database!`
+                    );
                 }
+                return true;
             };
         }
     }
