@@ -2,7 +2,7 @@
 
 _A modern Fastify plugin with support for Typescript, ES6/commonJS module, to connect to a MongoDB instance via the Mongoose ODM_
 
-## [0.1.3] 2024-03-04
+## [0.1.3] 2024-03-04 [Last for Fastify 4.x]
 
 ### Added 
 
