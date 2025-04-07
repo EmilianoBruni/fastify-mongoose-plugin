@@ -6,7 +6,7 @@ t.test('Uri not defined', async t => {
     const app = initServer(t);
     try {
         await app.register(mongoosePlugin);
-    } catch (err) {
+    } catch {
         t.pass('Throws error when uri not defined');
     }
 });
