@@ -40,21 +40,21 @@
     "prettier": "^3.2.5",
     "rimraf": "^5.0.5",
     "rollup": "^4.9.6",
-    "tap": "^18.7.0",
+    "tap": "^21.1.0",
     "typescript": "^5.3.3"
   },
   "exports": {
     "import": {
       "default": "./dist/index.js",
-      "types": "./dist/types/index.d.ts"	
+      "types": "./dist/types/index.d.ts"
     },
     "require": "./dist/index.cjs"
   },
   "dependencies": {
     "@types/node": "^20.11.16",
-    "fastify": "^4.26.0",
-    "fastify-plugin": "^4.5.1",
-    "mongoose": "^8.1.1"
+    "fastify": "^5.2.2",
+    "fastify-plugin": "^5.0.1",
+    "mongoose": "^8.13.2"
   },
   "types": "./dist/types/index.d.ts"
 }
