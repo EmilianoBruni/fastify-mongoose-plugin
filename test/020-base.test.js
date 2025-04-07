@@ -9,7 +9,6 @@ checkEnv(t);
 t.test('Check base plugin', async t => {
     const pluginOptions = {
         settings: {
-            useNewUrlParser: true,
             config: {
                 autoIndex: true
             }
