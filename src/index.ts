@@ -134,7 +134,7 @@ const fixReferencesObjectId = (decorator: TFMPPlugin, member: TFMPSchema) => {
                             );
                         }
                     }
-                } catch (e) {
+                } catch {
                     /* istanbul ignore next */
                     throw new Error(
                         `Post with ID ${v} does not exist in database!`
@@ -147,7 +147,7 @@ const fixReferencesObjectId = (decorator: TFMPPlugin, member: TFMPSchema) => {
 };
 
 const plugin = fp(initPlugin, {
-    fastify: '>=2.0.0',
+    fastify: '>=5.0.0',
     name: 'fastify-mongoose-plugin'
 });
 
