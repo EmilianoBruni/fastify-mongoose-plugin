@@ -25,6 +25,18 @@ It's is full compatible with fastify-mongoose-driver (see [below](#how-to-upgrad
 npm i fastify-mongoose-plugin -s
 ```
 
+### Compatibility
+
+| Plugin version | Fastify version |
+| :-----------:  | :----:          |
+| `>=0.2.x`      | `^5.x`          |
+| `<=0.1.3`      | `^4.x`          |
+
+
+* For **Fastify 4.x** use `fastify-mongoose-plugin@0.1.3`
+* For **Fastify 5.x** use  `fastify-mongoose-plugin@0.2.x`
+
+
 ## Usage
 
 ```javascript
@@ -342,11 +354,6 @@ This module supports both ESM and CommonJS. If you are using CommonJS, you can i
 ```js
 const mongoosePlugin = require('fastify-mongoose-plugin');
 ```
-
-## Fastify versions
-
-* For **Fastify 4.x** use `fastify-mongoose-plugin@0.1.3`
-* For **Fastify 5.x** use  `fastify-mongoose-plugin@0.2.x`
 
 ## Bugs / Help / Feature Requests / Contributing
 
