@@ -4,18 +4,28 @@
   "description": "A modern Fastify plugin with support for Typescript, ES6/commonJS module, to connect to a MongoDB instance via the Mongoose ODM",
   "main": "dist/index.js",
   "scripts": {
-    "test": "tap -j1 --allow-incomplete-coverage \"./test/*.test.?(c)js\"",
+    "test": "tap -j1 --allow-incomplete-coverage \"./test/**/*.test.?(c)[tj]s\"",
+    "build:watch": "nodemon -e json,ts -w src -x \"tsc\"",
     "buildcjs": "rollup ./dist/index.js --file ./dist/index.cjs --format cjs",
-    "clean": "rimraf ./dist",
-    "lint": "eslint \"src/**/*.ts\" \"test/**/*.?(c)js\" ",
+    "clean": "rimraf ./dist, rimraf .tap",
+    "lint": "eslint \"src/**/*.[jt]s?(x)\" \"test/**/*.?(c)[jt]s\"",
     "lint:fix": "npm run lint -- --fix",
-    "prepublishOnly": "npm run tsc && npm run buildcjs && npm test",
+    "build": "npm run tsc && npm run buildcjs",
+    "prepublishOnly": "npm run build && npm test",
     "test:ci": "npm run prepublishOnly",
-    "tsc": "npm run clean; tsc"
+    "tsc": "tsc"
   },
   "keywords": [
     "nodejs",
-    "typescript"
+    "typescript",
+    "mongoose",
+    "fastify",
+    "plugin",
+    "mongodb",
+    "odm",
+    "es6",
+    "esm",
+    "commonjs"
   ],
   "author": "Emiliano Bruni <info@ebruni.it>",
   "license": "Apache-2.0",
@@ -38,6 +48,7 @@
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-promise": "^6.6.0",
     "globals": "^16.0.0",
+    "nodemon": "^3.1.9",
     "prettier": "^3.5.3",
     "rimraf": "^5.0.10",
     "rollup": "^4.39.0",
