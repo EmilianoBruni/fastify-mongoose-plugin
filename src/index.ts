@@ -78,8 +78,9 @@ const loadModelsFromPath = async (
         try {
             const model = (await import(file)).default;
             modelsFromPath.push(model);
-        } catch (e: any) {
-            throw new Error(`Error loading schema ${file}: ${e.message}`);
+        } catch (e) {
+            const errorMessage = e instanceof Error ? e.message : String(e);
+            throw new Error(`Error loading schema ${file}: ${errorMessage}`);
         }
     }
     return modelsFromPath;
@@ -103,7 +104,7 @@ const fixReferences = (decorator: TFMPPlugin, schema: TFMPSchema) => {
         if (member.type === 'ObjectId') {
             fixReferencesObjectId(decorator, member);
         } else if (schema[key].length !== undefined) {
-            schema[key].forEach((member: any) =>
+            schema[key].forEach((member: TFMPSchema) =>
                 fixReferencesObjectId(decorator, member)
             );
         }
@@ -125,7 +126,7 @@ const fixReferencesObjectId = (decorator: TFMPPlugin, member: TFMPSchema) => {
 
             const ref = member.ref.toString();
 
-            member.validate = async (v: any): Promise<boolean> => {
+            member.validate = async (v: unknown): Promise<boolean> => {
                 try {
                     if (decorator[ref] !== undefined) {
                         const result = await decorator[ref]!.findById(v);
