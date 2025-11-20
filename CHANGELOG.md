@@ -2,6 +2,12 @@
 
 _A modern Fastify plugin with support for Typescript, ES6/commonJS module, to connect to a MongoDB instance via the Mongoose ODM_
 
+## [0.2.1] 2025-11-20
+
+### Fixed
+
+- Include TypeScript files in model directory traversal
+
 ## [0.2.0] 2025-04-07
 
 ### Added
@@ -15,7 +21,7 @@ _A modern Fastify plugin with support for Typescript, ES6/commonJS module, to co
 
 ## [0.1.3] 2024-03-04 [Last for Fastify 4.x]
 
-### Added 
+### Added
 
 Documentation
 
@@ -44,3 +50,10 @@ Documentation
 ### Added
 
 - First public release
+
+[0.2.1]: https://github.com/EmilianoBruni/fastify-mongoose-plugin/releases/tag/v0.2.1
+[0.2.0]: https://github.com/EmilianoBruni/fastify-mongoose-plugin/releases/tag/v0.2.0
+[0.1.3]: https://github.com/EmilianoBruni/fastify-mongoose-plugin/releases/tag/v0.1.3
+[0.1.2]: https://github.com/EmilianoBruni/fastify-mongoose-plugin/releases/tag/v0.1.2
+[0.1.1]: https://github.com/EmilianoBruni/fastify-mongoose-plugin/releases/tag/v0.1.1
+[0.1.0]: https://github.com/EmilianoBruni/fastify-mongoose-plugin/releases/tag/v0.1.0
