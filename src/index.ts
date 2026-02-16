@@ -48,18 +48,20 @@ const initPlugin: FastifyPluginAsync<TFMPOptions> = async (
                 if (model.alias === undefined)
                     throw new Error(`No alias defined for ${model.name}`);
 
-                decoratorPlugin[model.alias] = mongoose.model(
+                (decoratorPlugin as unknown as Record<string, TFMPPlugin>)[
+                    model.alias
+                ] = mongoose.model(
                     model.alias,
                     schema,
                     model.name
-                );
+                ) as unknown as TFMPPlugin;
             } else {
-                decoratorPlugin[
+                (decoratorPlugin as unknown as Record<string, TFMPPlugin>)[
                     model.alias
                         ? model.alias
                         : model.name.charAt(0).toUpperCase() +
                           model.name.slice(1)
-                ] = mongoose.model(model.name, schema);
+                ] = mongoose.model(model.name, schema) as unknown as TFMPPlugin;
             }
         });
     }

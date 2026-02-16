@@ -12,27 +12,26 @@ declare module 'fastify' {
     }
 }
 
-export type TFMPPlugin = Record<string, mongoose.Model<any, object>> & {
+export type TFMPPlugin = Record<string, mongoose.Model<object, object>> & {
     instance: typeof mongoose;
 };
 
-export type TFMPSchema<T = any> = SchemaTypeOptions<T> & {
+export type TFMPSchema<T = unknown> = SchemaTypeOptions<T> & {
     validateExistance?: boolean;
 };
 
-export type TFMPModel<T = any> = {
+export type TFMPModel<T> = {
     name: string;
     alias?: string;
     schema: TFMPSchema<T>;
     options?: MongooseSchemaOptions<T>;
-    class?: any;
-    virtualize?: (schema: any) => void;
+    class?: () => void;
 };
 
 // export type TFMPModel<T = any> = SchemaTypeOptions<T>;
-export type TFMPModels<T = any> = Array<TFMPModel<T>>;
+export type TFMPModels<T = unknown> = Array<TFMPModel<T>>;
 
-export type TFMPOptions<T = any> = FastifyPluginOptions & {
+export type TFMPOptions<T = unknown> = FastifyPluginOptions & {
     uri: string;
     settings?: MongooseOptions;
     models?: TFMPModels<T>;
