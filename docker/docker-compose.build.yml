@@ -2,8 +2,8 @@ version: '3.8'
 
 services:
     dev:
-        image: fastify-mongoose-plugin-dev
-        build: 
+        image: vsc-fastify-mongoose-plugin
+        build:
             context: ../
             dockerfile: docker/dev/Dockerfile
             args:
