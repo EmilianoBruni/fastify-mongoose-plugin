@@ -8,11 +8,11 @@ import type mongoose from 'mongoose';
 
 declare module 'fastify' {
     export interface FastifyInstance {
-        mongoose: TFMPPlugin;
+        mongoose: TFMPPlugin<unknown>;
     }
 }
 
-export type TFMPPlugin = Record<string, mongoose.Model<unknown, object>> & {
+export type TFMPPlugin<T> = Record<string, mongoose.Model<T, object>> & {
     instance: typeof mongoose;
 };
 

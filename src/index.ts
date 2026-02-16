@@ -12,7 +12,7 @@ import { pathToFileURL } from 'url';
 import fp from 'fastify-plugin';
 import mongoose from 'mongoose';
 
-let decoratorPlugin: TFMPPlugin;
+let decoratorPlugin: TFMPPlugin<unknown>;
 
 const initPlugin: FastifyPluginAsync<TFMPOptions<unknown>> = async (
     fastify: FastifyInstance,
@@ -27,7 +27,7 @@ const initPlugin: FastifyPluginAsync<TFMPOptions<unknown>> = async (
     }
 ) => {
     await mongoose.connect(uri, settings);
-    decoratorPlugin = { instance: mongoose } as unknown as TFMPPlugin;
+    decoratorPlugin = { instance: mongoose } as unknown as TFMPPlugin<unknown>;
 
     if (modelDirPath)
         models = [
@@ -48,20 +48,31 @@ const initPlugin: FastifyPluginAsync<TFMPOptions<unknown>> = async (
                 if (model.alias === undefined)
                     throw new Error(`No alias defined for ${model.name}`);
 
-                (decoratorPlugin as unknown as Record<string, TFMPPlugin>)[
-                    model.alias
-                ] = mongoose.model(
+                (
+                    decoratorPlugin as unknown as Record<
+                        string,
+                        TFMPPlugin<unknown>
+                    >
+                )[model.alias] = mongoose.model(
                     model.alias,
                     schema,
                     model.name
-                ) as unknown as TFMPPlugin;
+                ) as unknown as TFMPPlugin<unknown>;
             } else {
-                (decoratorPlugin as unknown as Record<string, TFMPPlugin>)[
+                (
+                    decoratorPlugin as unknown as Record<
+                        string,
+                        TFMPPlugin<unknown>
+                    >
+                )[
                     model.alias
                         ? model.alias
                         : model.name.charAt(0).toUpperCase() +
                           model.name.slice(1)
-                ] = mongoose.model(model.name, schema) as unknown as TFMPPlugin;
+                ] = mongoose.model(
+                    model.name,
+                    schema
+                ) as unknown as TFMPPlugin<unknown>;
             }
         });
     }
@@ -131,7 +142,10 @@ const walkDir = (
     return fileList;
 };
 
-const fixReferences = (decorator: TFMPPlugin, schema: TFMPSchema<unknown>) => {
+const fixReferences = (
+    decorator: TFMPPlugin<unknown>,
+    schema: TFMPSchema<unknown>
+) => {
     Object.keys(schema).forEach(key => {
         const member = schema[key];
         if (member.type === 'ObjectId') {
@@ -145,7 +159,7 @@ const fixReferences = (decorator: TFMPPlugin, schema: TFMPSchema<unknown>) => {
 };
 
 const fixReferencesObjectId = (
-    decorator: TFMPPlugin,
+    decorator: TFMPPlugin<unknown>,
     member: TFMPSchema<unknown>
 ) => {
     if (member.type === 'ObjectId') {
