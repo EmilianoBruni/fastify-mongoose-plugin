@@ -80,7 +80,11 @@ const loadModelsFromPath = async (
             modelsFromPath.push(model);
         } catch (e) {
             const errorMessage = e instanceof Error ? e.message : String(e);
-            throw new Error(`Error loading schema ${file}: ${errorMessage}`);
+            const error = new Error(
+                `Error loading schema ${file}: ${errorMessage}`
+            );
+            (error as Error & { cause?: unknown }).cause = e;
+            throw error;
         }
     }
     return modelsFromPath;
