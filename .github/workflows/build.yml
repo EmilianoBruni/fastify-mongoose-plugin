@@ -18,7 +18,7 @@ jobs:
                   node-version: ${{ matrix.node-version }}
 
             - name: Start MongoDB ${{ matrix.mongodb-version }}
-              uses: supercharge/mongodb-github-action@latest
+              uses: supercharge/mongodb-github-action
               with:
                   mongodb-version: ${{ matrix.mongodb-version }}
 
