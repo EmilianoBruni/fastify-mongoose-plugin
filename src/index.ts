@@ -14,7 +14,7 @@ import mongoose from 'mongoose';
 
 let decoratorPlugin: TFMPPlugin;
 
-const initPlugin: FastifyPluginAsync<TFMPOptions> = async (
+const initPlugin: FastifyPluginAsync<TFMPOptions<unknown>> = async (
     fastify: FastifyInstance,
     {
         uri,
@@ -24,7 +24,7 @@ const initPlugin: FastifyPluginAsync<TFMPOptions> = async (
         modelDirPath = undefined,
         modelPathFilter = (_dir, file) =>
             file.slice(-3) === '.js' || file.slice(-3) === '.ts'
-    }: TFMPOptions
+    }
 ) => {
     await mongoose.connect(uri, settings);
     decoratorPlugin = { instance: mongoose } as unknown as TFMPPlugin;
@@ -78,8 +78,8 @@ const initPlugin: FastifyPluginAsync<TFMPOptions> = async (
 const loadModelsFromPath = async (
     modelDirPath: string,
     filterFn: (dir: string, file: string) => boolean
-): Promise<TFMPModels> => {
-    const modelsFromPath: TFMPModels = [];
+): Promise<TFMPModels<unknown>> => {
+    const modelsFromPath: TFMPModels<unknown> = [];
     const schemaFiles = walkDir(modelDirPath, filterFn);
     for await (const file of schemaFiles) {
         try {
@@ -131,20 +131,23 @@ const walkDir = (
     return fileList;
 };
 
-const fixReferences = (decorator: TFMPPlugin, schema: TFMPSchema) => {
+const fixReferences = (decorator: TFMPPlugin, schema: TFMPSchema<unknown>) => {
     Object.keys(schema).forEach(key => {
         const member = schema[key];
         if (member.type === 'ObjectId') {
             fixReferencesObjectId(decorator, member);
         } else if (schema[key].length !== undefined) {
-            schema[key].forEach((member: TFMPSchema) =>
+            schema[key].forEach((member: TFMPSchema<unknown>) =>
                 fixReferencesObjectId(decorator, member)
             );
         }
     });
 };
 
-const fixReferencesObjectId = (decorator: TFMPPlugin, member: TFMPSchema) => {
+const fixReferencesObjectId = (
+    decorator: TFMPPlugin,
+    member: TFMPSchema<unknown>
+) => {
     if (member.type === 'ObjectId') {
         member.type = mongoose.Schema.Types.ObjectId;
 
