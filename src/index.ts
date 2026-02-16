@@ -6,8 +6,9 @@ import type {
     TFMPSchema
 } from './types.js';
 import type { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import { readdirSync, statSync } from 'fs';
-import { join } from 'path';
+import { readFileSync, readdirSync, statSync } from 'fs';
+import { extname, join } from 'path';
+import { pathToFileURL } from 'url';
 import fp from 'fastify-plugin';
 import mongoose from 'mongoose';
 
@@ -20,14 +21,19 @@ const initPlugin: FastifyPluginAsync<TFMPOptions> = async (
         settings,
         models = [],
         useNameAndAlias = false,
-        modelDirPath = undefined
+        modelDirPath = undefined,
+        modelPathFilter = (_dir, file) =>
+            file.slice(-3) === '.js' || file.slice(-3) === '.ts'
     }: TFMPOptions
 ) => {
     await mongoose.connect(uri, settings);
     decoratorPlugin = { instance: mongoose } as unknown as TFMPPlugin;
 
     if (modelDirPath)
-        models = [...(await loadModelsFromPath(modelDirPath)), ...models];
+        models = [
+            ...(await loadModelsFromPath(modelDirPath, modelPathFilter)),
+            ...models
+        ];
 
     if (models.length !== 0) {
         models.forEach(model => {
@@ -36,8 +42,6 @@ const initPlugin: FastifyPluginAsync<TFMPOptions> = async (
             const schema = new mongoose.Schema(model.schema, model.options);
 
             if (model.class) schema.loadClass(model.class);
-
-            if (model.virtualize) model.virtualize(schema);
 
             if (useNameAndAlias) {
                 /* istanbul ignore next */
@@ -70,13 +74,14 @@ const initPlugin: FastifyPluginAsync<TFMPOptions> = async (
 };
 
 const loadModelsFromPath = async (
-    modelDirPath: string
+    modelDirPath: string,
+    filterFn: (dir: string, file: string) => boolean
 ): Promise<TFMPModels> => {
     const modelsFromPath: TFMPModels = [];
-    const schemaFiles = walkDir(modelDirPath);
+    const schemaFiles = walkDir(modelDirPath, filterFn);
     for await (const file of schemaFiles) {
         try {
-            const model = (await import(file)).default;
+            const model = (await loadModelFromFile(file)).default;
             modelsFromPath.push(model);
         } catch (e) {
             const errorMessage = e instanceof Error ? e.message : String(e);
@@ -90,14 +95,36 @@ const loadModelsFromPath = async (
     return modelsFromPath;
 };
 
-const walkDir = (modelDirPath: string, fileList: string[] = []): string[] => {
+const loadModelFromFile = async (file: string) => {
+    const extension = extname(file).toLowerCase();
+    if (
+        extension === '.js' ||
+        extension === '.mjs' ||
+        extension === '.cjs' ||
+        extension === '.ts'
+    ) {
+        return import(pathToFileURL(file).href);
+    }
+
+    const fileContent = readFileSync(file, 'utf8');
+    const sourceUrl = `\n//# sourceURL=${pathToFileURL(file).href}`;
+    const moduleSource = `${fileContent}${sourceUrl}`;
+    const moduleDataUrl = `data:text/javascript;base64,${Buffer.from(moduleSource).toString('base64')}`;
+    return import(moduleDataUrl);
+};
+
+const walkDir = (
+    modelDirPath: string,
+    filterFn: (dir: string, file: string) => boolean,
+    fileList: string[] = []
+): string[] => {
     const dir = readdirSync(modelDirPath);
     dir.forEach(file => {
         const pathFile = join(modelDirPath, file);
         const stat = statSync(pathFile);
-        if (stat.isDirectory()) fileList = walkDir(pathFile, fileList);
-        else if (file.slice(-3) === '.js' || file.slice(-3) === '.ts')
-            fileList.push(pathFile);
+        if (stat.isDirectory())
+            fileList = walkDir(pathFile, filterFn, fileList);
+        else if (filterFn(modelDirPath, file)) fileList.push(pathFile);
     });
     return fileList;
 };

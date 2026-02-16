@@ -38,4 +38,5 @@ export type TFMPOptions<T = any> = FastifyPluginOptions & {
     models?: TFMPModels<T>;
     useNameAndAlias?: boolean;
     modelDirPath?: string;
+    modelPathFilter?: (dir: string, file: string) => boolean;
 };
