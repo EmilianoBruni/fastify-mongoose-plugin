@@ -1,0 +1,14 @@
+export default {
+    name: 'authors',
+    alias: 'Author',
+    schema: {
+        name: {
+            type: String,
+            required: true
+        },
+        biography: {
+            type: String,
+            required: true
+        }
+    }
+};
