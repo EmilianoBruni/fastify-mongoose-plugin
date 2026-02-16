@@ -17,6 +17,7 @@ It's is full compatible with fastify-mongoose-driver (see [below](#how-to-upgrad
 - Support for ES6 module
 - Support for commonJS module
 - `modelDirPath` option to define models in separate files.
+- `modelPathFilter` option to customize which files are loaded from `modelDirPath` (including custom extensions).
 
 ## Installation
 
@@ -111,6 +112,8 @@ fastify.register(
     ],
     useNameAndAlias: true,
     modelDirPath: path.resolve("..."), // will be merged with models
+    modelPathFilter: (_dir, file) =>
+      file.endsWith(".js") || file.endsWith(".ts") || file.endsWith(".customfilter"),
   },
   (err) => {
     if (err) throw err;
@@ -127,22 +130,23 @@ decorator(); // Returns the decorator pointer, useful for using mongoose in sepe
 
 ## Options
 
-| Option            | Description                                                                                                                                                                                           |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `uri`             | Required, the Unique Resource Identifier to use when connecting to the Database.                                                                                                                      |
-| `settings`        | Optional, the settings to be passed on to the MongoDB Driver as well as the Mongoose-specific options. [Refer here for further info](https://mongoosejs.com/docs/api.html#mongoose_Mongoose-connect). |
-| `models`          | Optional, any models to be declared and injected under `fastify.mongoose`                                                                                                                             |
-| `useNameAndAlias` | Optional, declares models using `mongoose.model(alias, schema, name)` instead of `mongoose.model(name, schema)`                                                                                       |
-| `modelDirPath`    | Optional, directory where it's possible to define models in separate files. The directory will be trasverse includes all subdirectories. Scan only files with .js extension.                          |
+| Option            | Description                                                                                                                                                                                                                        |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `uri`             | Required, the Unique Resource Identifier to use when connecting to the Database.                                                                                                                                                   |
+| `settings`        | Optional, the settings to be passed on to the MongoDB Driver as well as the Mongoose-specific options. [Refer here for further info](https://mongoosejs.com/docs/api.html#mongoose_Mongoose-connect).                              |
+| `models`          | Optional, any models to be declared and injected under `fastify.mongoose`                                                                                                                                                          |
+| `useNameAndAlias` | Optional, declares models using `mongoose.model(alias, schema, name)` instead of `mongoose.model(name, schema)`                                                                                                                    |
+| `modelDirPath`    | Optional, directory where it's possible to define models in separate files. The directory will be traversed including all subdirectories. By default scans `.js` and `.ts` files (see `modelPathFilter` to change this behaviour). |
+| `modelPathFilter` | Optional, custom filter function `(dir, file) => boolean` used while traversing `modelDirPath`. Use it to include/exclude files and load custom extensions containing valid JS modules.                                            |
 
 Any models declared should follow the following format:
 
 ```javascript
 {
-  name: "profiles", // Required, should match name of model in database
+  name: "profiles", // Required, should match name of model in database (it's the collection name)
   alias: "Profile", // Optional, an alias to inject the model as
   schema: schemaDefinition, // Required, should match schema of model in database,
-  options: schemaOptions, // Optional, schema configurable options
+  options: schemaOptions, // Optional, mongoose schema configurable options
   class: classDefinition // Optional, should be an ES6 class wrapper for the model
 }
 ```
@@ -154,6 +158,17 @@ or, if definitions are splitted in separate files using `modelDirPath` option:
 export default {
   ...
 }
+```
+
+with a custom filter:
+
+```javascript
+fastify.register(mongoosePlugin, {
+    uri: 'mongodb://admin:pass@localhost:27017/database_name',
+    modelDirPath: path.resolve('./models'),
+    modelPathFilter: (_dir, file) =>
+        file.endsWith('.js') || file.endsWith('.customfilter')
+});
 ```
 
 The `schemaDefinition` variable should be created according to the [Mongoose Model Specification](https://mongoosejs.com/docs/schematypes.html).
