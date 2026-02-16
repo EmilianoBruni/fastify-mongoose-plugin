@@ -9,6 +9,10 @@ _A modern Fastify plugin with support for Typescript, ES6/commonJS module, to co
 - Required Fastify >= 5.6
 - Add `modelPathFilter` options to filter to include/exclude files and load custom extensions containing valid JS modules
 
+### Fixed
+
+- Fix type definitions
+
 ## [0.2.1] - 2025-11-20
 
 ### Fixed
