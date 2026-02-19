@@ -1,4 +1,4 @@
-import { checkEnv, initServer, registerPlugin } from './helpers.js';
+import { checkEnv, createApp, initServer, registerPlugin } from './helpers.js';
 import t from 'tap';
 
 import accountsModel from './models/accounts.js';
@@ -6,21 +6,14 @@ import postsModel from './models/posts.js';
 
 checkEnv(t);
 
-t.check('Check base plugin with no models', async t => {
-    const pluginOptions = {
-        settings: {
-            config: {
-                autoIndex: true
-            }
-        },
-        useNameAndAlias: true
-    };
+t.test('Check base plugin with no models', async t => {
+    const pluginOptions = {};
 
-    const fastify = initServer(t, pluginOptions);
+    // const app = createApp(t, pluginOptions);
+    const app = await createApp(t, pluginOptions);
 
-    await fastify.ready();
-
-    t.ok(fastify.mongoose.instance);
+    t.ok(app.mongoose);
+    t.ok(app.mongoose.instance);
 });
 
 t.test('Check base plugin', async t => {
