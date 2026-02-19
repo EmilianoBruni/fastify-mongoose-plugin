@@ -13,19 +13,10 @@ declare module 'fastify' {
     }
 }
 
-// export type TFMPPlugin<T = unknown> = Record<
-// export type TFMPPlugin = {
-//     instance: typeof mongoose;
-// } & Record<
-//     Exclude<string, 'instance'>,
-//     // mongoose.Model<T, object>
-//     Model<any>
-// >;
-
-export type TFMPPlugin = { instance: typeof mongoose } & Omit<
-    Record<string, Model<any>>,
-    'instance'
->;
+export type TFMPPlugin = {
+    instance: typeof mongoose;
+    models: Record<string, <T = unknown>() => Model<T>>;
+};
 
 export type TFMPSchema = SchemaDefinition;
 

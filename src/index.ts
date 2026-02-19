@@ -11,6 +11,7 @@ import { extname, join } from 'path';
 import { pathToFileURL } from 'url';
 import fp from 'fastify-plugin';
 import mongoose from 'mongoose';
+import type { Model } from 'mongoose';
 
 let decoratorPlugin: TFMPPlugin;
 
@@ -27,7 +28,7 @@ const initPlugin: FastifyPluginAsync<TFMPOptions> = async (
     }
 ) => {
     await mongoose.connect(uri, settings);
-    decoratorPlugin = { instance: mongoose };
+    decoratorPlugin = { instance: mongoose, models: {} };
 
     if (modelDirPath)
         models = [
@@ -46,30 +47,20 @@ const initPlugin: FastifyPluginAsync<TFMPOptions> = async (
             /* istanbul ignore next */
             if (model.alias === undefined)
                 throw new Error(`No alias defined for ${model.name}`);
-
-            (decoratorPlugin as unknown as Record<string, TFMPPlugin>)[
-                model.alias
-            ] = mongoose.model(
+            const modelInstance = mongoose.model(
                 model.alias,
                 schema,
                 model.name
-            ) as unknown as TFMPPlugin;
+            );
+            decoratorPlugin.models[model.alias] = <T = unknown>() =>
+                modelInstance as unknown as Model<T>;
         } else {
-            // (decoratorPlugin as unknown as Record<string, TFMPPlugin<unknown>>)[
-            //     model.alias
-            //         ? model.alias
-            //         : model.name.charAt(0).toUpperCase() + model.name.slice(1)
-            // ] = mongoose.model(
-            //     model.name,
-            //     schema
-            // ) as unknown as TFMPPlugin<unknown>;
-
             const modelInstance = mongoose.model(model.name, schema);
-            decoratorPlugin[
+            decoratorPlugin.models[
                 model.alias
                     ? model.alias
                     : model.name.charAt(0).toUpperCase() + model.name.slice(1)
-            ] = modelInstance;
+            ] = <T = unknown>() => modelInstance as unknown as Model<T>;
         }
     });
 
@@ -176,8 +167,9 @@ const fixReferencesObjectId = (decorator: TFMPPlugin, member: TFMPSchema) => {
 
             member.validate = async (v: unknown): Promise<boolean> => {
                 try {
-                    if (decorator[ref] !== undefined) {
-                        const result = await decorator[ref]!.findById(v);
+                    if (decorator.models[ref] !== undefined) {
+                        const result =
+                            await decorator.models[ref]()!.findById(v);
                         if (!result) {
                             throw new Error(
                                 `Post with ID ${v} does not exist in database!`
