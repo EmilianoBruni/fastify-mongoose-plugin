@@ -1,41 +1,48 @@
 import type { FastifyPluginOptions } from 'fastify';
 import type {
     MongooseOptions,
-    SchemaTypeOptions,
-    SchemaOptions as MongooseSchemaOptions
+    SchemaOptions as MongooseSchemaOptions,
+    SchemaDefinition,
+    Model
 } from 'mongoose';
 import type mongoose from 'mongoose';
 
 declare module 'fastify' {
     export interface FastifyInstance {
-        mongoose: TFMPPlugin<unknown>;
+        mongoose: TFMPPlugin;
     }
 }
 
-export type TFMPPlugin<T> = Record<string, mongoose.Model<T, object>> & {
-    instance: typeof mongoose;
-};
+// export type TFMPPlugin<T = unknown> = Record<
+// export type TFMPPlugin = {
+//     instance: typeof mongoose;
+// } & Record<
+//     Exclude<string, 'instance'>,
+//     // mongoose.Model<T, object>
+//     Model<any>
+// >;
 
-// export type TFMPSchema<T = any> = SchemaTypeOptions<T> & {
-//     validateExistance?: boolean;
-// };
-export type TFMPSchema<T> = SchemaTypeOptions<T> & {};
+export type TFMPPlugin = { instance: typeof mongoose } & Omit<
+    Record<string, Model<any>>,
+    'instance'
+>;
 
-export type TFMPModel<T> = {
+export type TFMPSchema = SchemaDefinition;
+
+export type TFMPModel = {
     name: string;
     alias?: string;
-    schema: TFMPSchema<T>;
-    options?: MongooseSchemaOptions<T>;
+    schema: SchemaDefinition;
+    options?: MongooseSchemaOptions;
     class?: () => void;
 };
 
-// export type TFMPModel<T = any> = SchemaTypeOptions<T>;
-export type TFMPModels<T> = Array<TFMPModel<T>>;
+export type TFMPModels = Array<TFMPModel>;
 
-export type TFMPOptions<T> = FastifyPluginOptions & {
+export type TFMPOptions = FastifyPluginOptions & {
     uri: string;
     settings?: MongooseOptions;
-    models?: TFMPModels<T>;
+    models?: TFMPModels;
     useNameAndAlias?: boolean;
     modelDirPath?: string;
     modelPathFilter?: (dir: string, file: string) => boolean;

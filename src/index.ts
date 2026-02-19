@@ -12,9 +12,9 @@ import { pathToFileURL } from 'url';
 import fp from 'fastify-plugin';
 import mongoose from 'mongoose';
 
-let decoratorPlugin: TFMPPlugin<unknown>;
+let decoratorPlugin: TFMPPlugin;
 
-const initPlugin: FastifyPluginAsync<TFMPOptions<unknown>> = async (
+const initPlugin: FastifyPluginAsync<TFMPOptions> = async (
     fastify: FastifyInstance,
     {
         uri,
@@ -27,7 +27,7 @@ const initPlugin: FastifyPluginAsync<TFMPOptions<unknown>> = async (
     }
 ) => {
     await mongoose.connect(uri, settings);
-    decoratorPlugin = { instance: mongoose } as unknown as TFMPPlugin<unknown>;
+    decoratorPlugin = { instance: mongoose };
 
     if (modelDirPath)
         models = [
@@ -47,22 +47,29 @@ const initPlugin: FastifyPluginAsync<TFMPOptions<unknown>> = async (
             if (model.alias === undefined)
                 throw new Error(`No alias defined for ${model.name}`);
 
-            (decoratorPlugin as unknown as Record<string, TFMPPlugin<unknown>>)[
+            (decoratorPlugin as unknown as Record<string, TFMPPlugin>)[
                 model.alias
             ] = mongoose.model(
                 model.alias,
                 schema,
                 model.name
-            ) as unknown as TFMPPlugin<unknown>;
+            ) as unknown as TFMPPlugin;
         } else {
-            (decoratorPlugin as unknown as Record<string, TFMPPlugin<unknown>>)[
+            // (decoratorPlugin as unknown as Record<string, TFMPPlugin<unknown>>)[
+            //     model.alias
+            //         ? model.alias
+            //         : model.name.charAt(0).toUpperCase() + model.name.slice(1)
+            // ] = mongoose.model(
+            //     model.name,
+            //     schema
+            // ) as unknown as TFMPPlugin<unknown>;
+
+            const modelInstance = mongoose.model(model.name, schema);
+            decoratorPlugin[
                 model.alias
                     ? model.alias
                     : model.name.charAt(0).toUpperCase() + model.name.slice(1)
-            ] = mongoose.model(
-                model.name,
-                schema
-            ) as unknown as TFMPPlugin<unknown>;
+            ] = modelInstance;
         }
     });
 
@@ -78,8 +85,8 @@ const initPlugin: FastifyPluginAsync<TFMPOptions<unknown>> = async (
 const loadModelsFromPath = async (
     modelDirPath: string,
     filterFn: (dir: string, file: string) => boolean
-): Promise<TFMPModels<unknown>> => {
-    const modelsFromPath: TFMPModels<unknown> = [];
+): Promise<TFMPModels> => {
+    const modelsFromPath: TFMPModels = [];
     const schemaFiles = walkDir(modelDirPath, filterFn);
     for await (const file of schemaFiles) {
         try {
@@ -131,26 +138,28 @@ const walkDir = (
     return fileList;
 };
 
-const fixReferences = (
-    decorator: TFMPPlugin<unknown>,
-    schema: TFMPSchema<unknown>
-) => {
+const fixReferences = (decorator: TFMPPlugin, schema: TFMPSchema) => {
     Object.keys(schema).forEach(key => {
         const member = schema[key];
-        if (member.type === 'ObjectId') {
-            fixReferencesObjectId(decorator, member);
-        } else if (schema[key].length !== undefined) {
-            schema[key].forEach((member: TFMPSchema<unknown>) =>
-                fixReferencesObjectId(decorator, member)
+        if (member === undefined) return;
+        if (member instanceof mongoose.SchemaTypeOptions) {
+            if (member.type === 'ObjectId') {
+                fixReferencesObjectId(decorator, member);
+            } else if (Array.isArray(member)) {
+                member.forEach((subMember: TFMPSchema) =>
+                    fixReferencesObjectId(decorator, subMember)
+                );
+            }
+        } else {
+            // TODO: to be implemented for nested schemas
+            console.warn(
+                'Nested schemas are not yet supported for reference validation!'
             );
         }
     });
 };
 
-const fixReferencesObjectId = (
-    decorator: TFMPPlugin<unknown>,
-    member: TFMPSchema<unknown>
-) => {
+const fixReferencesObjectId = (decorator: TFMPPlugin, member: TFMPSchema) => {
     if (member.type === 'ObjectId') {
         member.type = mongoose.Schema.Types.ObjectId;
 
