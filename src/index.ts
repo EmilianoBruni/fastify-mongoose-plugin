@@ -35,47 +35,36 @@ const initPlugin: FastifyPluginAsync<TFMPOptions<unknown>> = async (
             ...models
         ];
 
-    if (models.length !== 0) {
-        models.forEach(model => {
-            fixReferences(decoratorPlugin, model.schema);
+    models.forEach(model => {
+        fixReferences(decoratorPlugin, model.schema);
 
-            const schema = new mongoose.Schema(model.schema, model.options);
+        const schema = new mongoose.Schema(model.schema, model.options);
 
-            if (model.class) schema.loadClass(model.class);
+        if (model.class) schema.loadClass(model.class);
 
-            if (useNameAndAlias) {
-                /* istanbul ignore next */
-                if (model.alias === undefined)
-                    throw new Error(`No alias defined for ${model.name}`);
+        if (useNameAndAlias) {
+            /* istanbul ignore next */
+            if (model.alias === undefined)
+                throw new Error(`No alias defined for ${model.name}`);
 
-                (
-                    decoratorPlugin as unknown as Record<
-                        string,
-                        TFMPPlugin<unknown>
-                    >
-                )[model.alias] = mongoose.model(
-                    model.alias,
-                    schema,
-                    model.name
-                ) as unknown as TFMPPlugin<unknown>;
-            } else {
-                (
-                    decoratorPlugin as unknown as Record<
-                        string,
-                        TFMPPlugin<unknown>
-                    >
-                )[
-                    model.alias
-                        ? model.alias
-                        : model.name.charAt(0).toUpperCase() +
-                          model.name.slice(1)
-                ] = mongoose.model(
-                    model.name,
-                    schema
-                ) as unknown as TFMPPlugin<unknown>;
-            }
-        });
-    }
+            (decoratorPlugin as unknown as Record<string, TFMPPlugin<unknown>>)[
+                model.alias
+            ] = mongoose.model(
+                model.alias,
+                schema,
+                model.name
+            ) as unknown as TFMPPlugin<unknown>;
+        } else {
+            (decoratorPlugin as unknown as Record<string, TFMPPlugin<unknown>>)[
+                model.alias
+                    ? model.alias
+                    : model.name.charAt(0).toUpperCase() + model.name.slice(1)
+            ] = mongoose.model(
+                model.name,
+                schema
+            ) as unknown as TFMPPlugin<unknown>;
+        }
+    });
 
     // Close connection when app is closing
     fastify.addHook('onClose', async app => {

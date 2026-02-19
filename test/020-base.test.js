@@ -6,6 +6,23 @@ import postsModel from './models/posts.js';
 
 checkEnv(t);
 
+t.check('Check base plugin with no models', async t => {
+    const pluginOptions = {
+        settings: {
+            config: {
+                autoIndex: true
+            }
+        },
+        useNameAndAlias: true
+    };
+
+    const fastify = initServer(t, pluginOptions);
+
+    await fastify.ready();
+
+    t.ok(fastify.mongoose.instance);
+});
+
 t.test('Check base plugin', async t => {
     const pluginOptions = {
         settings: {
